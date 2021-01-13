@@ -12,6 +12,7 @@
 extern char _payload_start, _payload_end; /* internal payload */
 static const void* entry_point;
 long disabled_hart_mask;
+long hart_proceed;
 
 static uintptr_t dtb_output()
 {

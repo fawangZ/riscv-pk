@@ -279,6 +279,11 @@ do_reset:
   # wait for an IPI to signal that it's safe to boot
   wfi
 
+  # only start if hart_proceed is set (only for wfi unimplemented)
+  la a4, hart_proceed
+  LOAD a4, 0(a4)
+  beqz a4, .LmultiHart
+
   # masked harts never start
   la a4, disabled_hart_mask
   LOAD a4, 0(a4)

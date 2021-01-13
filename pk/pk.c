@@ -10,6 +10,7 @@
 
 elf_info current;
 long disabled_hart_mask;
+long hart_proceed;
 
 static void help()
 {
