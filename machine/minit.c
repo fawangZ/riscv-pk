@@ -160,6 +160,8 @@ static void hart_plic_init()
 
 static void wake_harts()
 {
+  printm("[DEBUG] harts num: %d hart mask %x disabled hart mask %x\n", MAX_HARTS, hart_mask, disabled_hart_mask);
+  hart_proceed = 1;
   for (int hart = 0; hart < MAX_HARTS; ++hart)
     if ((((~disabled_hart_mask & hart_mask) >> hart) & 1))
       *OTHER_HLS(hart)->ipi = 1; // wakeup the hart
@@ -173,6 +175,7 @@ void init_first_hart(uintptr_t hartid, uintptr_t dtb)
 #endif
 
   // Confirm console as early as possible
+  hart_proceed = 0;
 #ifndef S2C
   query_uart(dtb);
   query_xuart(dtb);
@@ -195,6 +198,7 @@ void init_first_hart(uintptr_t hartid, uintptr_t dtb)
   query_chosen(dtb);
 
   wake_harts();
+  printm("[DEBUG] wake harts done\n");
 
   plic_init();
   hart_plic_init();
@@ -205,6 +209,7 @@ void init_first_hart(uintptr_t hartid, uintptr_t dtb)
 
 void init_other_hart(uintptr_t hartid, uintptr_t dtb)
 {
+  printm("[DEBUG] init other hart\n");
   hart_init();
   hart_plic_init();
   boot_other_hart(dtb);
