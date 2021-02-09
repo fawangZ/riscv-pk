@@ -124,8 +124,11 @@ static void send_ipi_many(uintptr_t* pmask, int event)
   uint32_t incoming_ipi = 0;
   for (uintptr_t i = 0, m = mask; m; i++, m >>= 1)
     if (m & 1)
-      while (*OTHER_HLS(i)->ipi)
-        incoming_ipi |= atomic_swap(HLS()->ipi, 0);
+      while (*OTHER_HLS(i)->ipi) {
+        // incoming_ipi |= atomic_swap(HLS()->ipi, 0);
+        incoming_ipi |= *HLS()->ipi;
+        *HLS()->ipi = 0;
+      }
 
   // if we got an IPI, restore it; it will be taken after returning
   if (incoming_ipi) {
