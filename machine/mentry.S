@@ -32,10 +32,16 @@ trap_table:
 
   .option norvc
   .section .text.init,"ax",@progbits
+  .globl _start
   .globl reset_vector
+  .type _start, @function
+#define MSTATUS_FS 0x00006000
+  .globl _run
+_start:
 reset_vector:
   j do_reset
 
+  .align 4
 trap_vector:
   csrrw sp, mscratch, sp
   beqz sp, .Ltrap_from_machine_mode
@@ -233,6 +239,9 @@ __trap_from_machine_mode:
   j restore_regs
 
 do_reset:
+  li a0, MSTATUS_FS & (MSTATUS_FS >> 1)
+  csrs mstatus, a0
+  csrwi fcsr, 0
   li x1, 0
   li x2, 0
   li x3, 0
@@ -265,10 +274,14 @@ do_reset:
   li x29, 0
   li x30, 0
   li x31, 0
+  mv s0, zero
+  la sp, _stack_pointer
 #ifdef S2C
+  jal cru_clk_change_withnocpu
   jal initUart
-  //jal initDDR
+  jal initDDR
   jal printInfo
+  jal printInfoddrinit
   jal copyAndRun
 #endif
   .globl _run

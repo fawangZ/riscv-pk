@@ -49,6 +49,37 @@
 #define REG_WRITE(addr, value)  (*((volatile unsigned int*)((unsigned long long)addr))) = (value)
 #define REG_READ(addr)  (*((volatile unsigned int*)((unsigned long long)addr)))
 
+//cru define
+#define CRU_BASE 0x31120000 //cru base config
+
+void cru_clk_change(){
+	REG_WRITE(CRU_BASE+0x08,0x00);
+}
+
+void cru_clk_change_withnocpu(){
+	REG_WRITE(CRU_BASE+0x08,0x02);
+}
+
+
+
+void delay_1(unsigned int loops){
+
+	while(loops--){
+		__asm__ volatile("nop");
+	}
+}
+
+void cru_cpu_change(){
+	REG_WRITE(CRU_BASE+0x08,0x02);//cpu切换到低频时钟，准备进行pll寄存器的配置。
+	REG_WRITE(CRU_BASE+0x40,0x0001207d);//pll0_crt0 config
+	REG_WRITE(CRU_BASE+0x44,0x00000000);//pll0_crt0 config
+	REG_WRITE(CRU_BASE+0x48,0x00000300);//pll0_crt0 config
+	REG_WRITE(CRU_BASE+0x4c,0x00000088);//pll0_crt0 config
+
+	delay_1(50);
+	REG_WRITE(CRU_BASE+0x08,0x00);
+
+}
 void uart_delay(unsigned int loops)
 {
   while(loops--){
@@ -56,22 +87,9 @@ void uart_delay(unsigned int loops)
   }
 }
 
-void printInfo(){
+void printInfoddrinit(){
   register unsigned int value asm("t0");
   register unsigned int status asm("t1");
-
-  value = REG_READ(LSR);
-  status = !(value & 0x60);
-  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
-  while(status) // transmit empty and transmit holding reg empty
-  {
-    //uart_delay(100);
-    value = REG_READ(LSR);
-    status = !(value & 0x60);
-  }
-  //REG_WRITE(THR,data);
-  REG_WRITE(THR,0x54);
-
   value = REG_READ(LSR);
   status = !(value & 0x60);
   //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
@@ -83,6 +101,224 @@ void printInfo(){
   }
   //REG_WRITE(THR,data);
   REG_WRITE(THR,0x44);
+  
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x44);
+
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x52);
+}
+
+void printInfo(){
+  register unsigned int value asm("t0");
+  register unsigned int status asm("t1");
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x48);
+  
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x65);
+
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x6C);
+
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x6C);
+  
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x6F);
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x2C);
+
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x58);
+ 
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x69);
+
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x61);
+
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x6E);
+
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x67);
+
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x53);
+
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x68);
+
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x61);
+
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x6E);
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x21);
 }
 
 void writechar(unsigned char data)
@@ -98,35 +334,39 @@ void writechar(unsigned char data)
   REG_WRITE(THR,data);
 }
 
-int readchar()
+unsigned char readchar()
 {
   unsigned int value;
-  int recv;
+  unsigned char recv;
 
   value = REG_READ(LSR);
-  if (value & 0x1) {
-    recv = REG_READ(RBR);
+
+  while(!(value & 0x1)) // LSR = 0x1, data ready
+  {
+        uart_delay(100);
+    value = REG_READ(LSR);
   }
-  else {
-    recv = -1;
-  }
+
+  recv = REG_READ(RBR);
 
   return recv;
 }
 
 void initUart()
 {
-    REG_WRITE(LCR,0x83); //0x0c
+	
+	REG_WRITE(LCR,0x83); //0x0c
     while((REG_READ(USR)&0x1) == 0x1);//0x7c
     REG_WRITE(DLH,0x0);   //0x04
     //REG_WRITE(DLL,0x44);   //0x00 125M/('h44*16) ~= 115200
-    //REG_WRITE(DLL,0x36);   //0x00 100M/('h36*16) ~= 115200
+    REG_WRITE(DLL,0x36);   //0x00 100M/('h36*16) ~= 115200
+    //REG_WRITE(DLL,0x82);   //0x00 240M/('h82*16) ~= 115200
+    //REG_WRITE(DLL,0x10);   //0x00 2.4M/('h10*16) ~= 9600
+    //REG_WRITE(DLL,0x0f);   //0x00 2.4M/('h0f*16) ~= 9600
     //REG_WRITE(DLL,0x4);   //0x00 100M/('h36*16) ~= 1562500
     //REG_WRITE(DLL,0x2);   //0x00 100M/('h36*16) ~=   3125000
+    //REG_WRITE(DLL,0xd);   //0x00 25M/('h13*16) ~=   115200
     //REG_WRITE(DLL,0x82);   //0x00 20MHz/9600
-    //REG_WRITE(DLL,0x6c);   //0x00 200MHz/115200/16
-    //REG_WRITE(DLL,0x36);   //0x00 100MHz/115200/16
-    REG_WRITE(DLL,0xa2);   //0x00 25MHz/9600/16
     //REG_WRITE(DLL+0x10000*uart_num,0x1);   //0x00 100M/('h36*16) ~= 115200
     REG_WRITE(LCR,0x03);  //0x0c
     REG_WRITE(FCR,0x01);  //0x08  // enable fifo
@@ -149,7 +389,7 @@ int __am_uartlite_getchar() {
 
 void copyAndRun(void)
 {
-  extern uint64_t reset_vector[];
+  extern uint64_t _start[];
   extern uint64_t _run[];
   extern uint64_t _data[];
   //extern uint64_t _end[];
@@ -159,7 +399,7 @@ void copyAndRun(void)
 
   register uint64_t *romStart asm("t0") = (uint64_t *)(unsigned long long)ROM_START;
   register uint64_t *ramStart asm("t1") = (uint64_t *)(unsigned long long)RAM_START;
-  register uint64_t *start asm("t2") = &reset_vector[0];
+  register uint64_t *start asm("t2") = &_start[0];
   register uint64_t *end asm("t3") = &_data[0];
   //register uint64_t *end asm("t3") = &_end[0];
   uint64_t size = end - start;
@@ -183,14 +423,14 @@ void initBSS(void)
   #define RAM_START 0x80000000
   uint64_t *ramStart  = (uint64_t *)(unsigned long long)RAM_START;
 
-  extern uint64_t reset_vector[];
+  extern uint64_t _start[];
   extern uint64_t _bss_start[];
   extern uint64_t _stack_top[];
   uint64_t *bssStart = &_bss_start[0];
   uint64_t *bssEnd   = &_stack_top[0];
   uint64_t bssSize = bssEnd - bssStart;
 
-  uint64_t *codeStart = &reset_vector[0];
+  uint64_t *codeStart = &_start[0];
   uint64_t codeSize = bssStart - codeStart;
   ramStart += codeSize;
   uint64_t i = 0;
@@ -352,7 +592,7 @@ DDRCmd cmds[] =
   {WRITE, MC,  0x310601b0, 0x00000041},
   {WRITE, MC,  0x31060320, 0x00000001},
   // mc SDRAM init(!!!!!!)
-  {READ , MC,  0x31060004, 0x00000001},  // this cannot pass
+  {READ , MC,  0x31060004, 0x00000001},
   // mc SDRAM config reset
   {WRITE, MC,  0x31060320, 0x00000000},
   {WRITE, MC,  0x31060060, 0x00000001},
@@ -366,7 +606,7 @@ DDRCmd cmds[] =
   {WRITE, PHY, 0x31070137, 0x00000000},
   {WRITE, PHY, 0x31070026, 0x00010000},
   {WRITE, PHY, 0x31070001, 0x00000201},
-  // write leveling training
+ // write leveling training
   {READ , PHY, 0x3107000d, 0x8000003f},
   // write leveling config reset
   {WRITE, MC,  0x31060010, 0x00001010},
