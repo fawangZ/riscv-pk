@@ -277,11 +277,14 @@ do_reset:
   mv s0, zero
   la sp, _stack_pointer
 #ifdef S2C
-  jal cru_clk_change_withnocpu
   jal initUart
-  jal initDDR
+  jal cru_cpu_change
+  jal cru_clk_change
+  //jal cru_clk_change_withnocpu
   jal printInfo
+  jal initDDR
   jal printInfoddrinit
+  //j pseg_0
   jal copyAndRun
 #endif
   .globl _run
