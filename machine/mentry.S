@@ -276,6 +276,10 @@ _run:
   jal initBSS
   csrw mscratch, x0
 
+  # reset the other core
+  la x1, 0x39001008
+  STORE x2, 0(x1)
+
   # write mtvec and make sure it sticks
   la t0, trap_vector
   csrw mtvec, t0
