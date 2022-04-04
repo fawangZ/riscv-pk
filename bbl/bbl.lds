@@ -15,6 +15,7 @@ SECTIONS
   . = MEM_START;
   _ftext = .;
 
+  . = MEM_START + 0xa0000;
   .text :
   {
     *(.text.init)
