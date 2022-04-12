@@ -278,13 +278,12 @@ do_reset:
   la sp, _stack_pointer
 #ifdef S2C
   jal initUart
+  jal printInfo
   jal cru_cpu_change
   jal cru_clk_change
-  //jal cru_clk_change_withnocpu
   jal printInfo
   jal initDDR
   jal printInfoddrinit
-  //j pseg_0
   jal copyAndRun
 #endif
   .globl _run
