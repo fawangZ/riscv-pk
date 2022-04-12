@@ -31,10 +31,11 @@
 			status = "okay";
 			timebase-frequency = <1000000>;
 			tlb-split;
-			L4: interrupt-controller {
+			L4: interrupt-controller { 
 				#interrupt-cells = <1>;
 				compatible = "riscv,cpu-intc";
 				interrupt-controller;
+				nohype-index = <0>;
 			};
 		};
 	};
