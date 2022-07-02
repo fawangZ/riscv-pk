@@ -279,9 +279,15 @@ do_reset:
 #ifdef S2C
   jal cru_clk_change_withnocpu
   jal initUart
-  jal initDDR
   jal printInfo
+  jal cru_cpu_change
+  jal cru_clk_change
+  jal printInfo
+  jal initDDR
   jal printInfoddrinit
+  #jal cru_cpu_change1
+  #jal cru_clk_change
+  jal printInfo
   jal copyAndRun
 #endif
   .globl _run

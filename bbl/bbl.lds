@@ -86,7 +86,7 @@ SECTIONS
 
   /* bss: Uninitialized writeable data section */
   . = .;
-  _bss_start = .;
+  _bss_start = ALIGN(8);
   .bss : 
   {
     *(.bss)
