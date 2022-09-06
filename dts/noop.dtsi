@@ -39,12 +39,13 @@
             compatible = "fixed-clock";
         };
 
+		/*
         ethernet1: ethernet@31010000 {
             compatible = "st,stm32-dwmac", "snps,dwmac-3.50a";
             reg = <0 0x31010000 0 0x10000>;
             reg-names = "stmmaceth";
             interrupt-parent = <&PLIC>;
-            interrupts = <3 2 1>;
+            interrupts = <44 43 42>;
             interrupt-names = "eth_lpi", "macirq", "eth_wake_irq";
             clock-names = "stmmaceth";
             clocks = <&clkc>;
@@ -62,6 +63,7 @@
             //     };
             // };
         };
+		*/
 
         // sdhci2: sdhci@30050000 {
         //     compatible = "snps,dwcmshc-sdhci";
@@ -88,30 +90,33 @@
             //reg = <0 0x3c000000 0 0x4000000>;
             reg-names = "control";
             riscv,max-priority = <3>;
-            riscv,ndev = <5>;
+            riscv,ndev = <56>;
         };
 
-        // xdma_0: axi-pcie@40000000 {
-        //     #address-cells = <3>;
-        //     #interrupt-cells = <1>;
-        //     #size-cells = <2>;
-        //     clock-names = "sys_clk", "sys_clk_gt";
-        //     clocks = <&clkc1>, <&clkc1>;
-        //     compatible = "xlnx,xdma-host-3.00";
-        //     device_type = "pci";
-        //     interrupt-map = <0 0 0 1 &pcie_intc_0 1>, <0 0 0 2 &pcie_intc_0 2>, <0 0 0 3 &pcie_intc_0 3>, <0 0 0 4 &pcie_intc_0 4>;
-        //     interrupt-map-mask = <0 0 0 7>;
-        //     interrupt-names = "misc", "msi0", "msi1";
-        //     interrupt-parent = <&PLIC>;
-        //     interrupts = <53 52 51>;
-        //     ranges = <0x03000000 0x00000000 0x40000000 0x0 0x40000000 0x00000000 0x08000000>;
-        //     reg = <0x00000000 0x48000000 0x0 0x08000000>;
-        //     pcie_intc_0: interrupt-controller {
-        //         #address-cells = <0>;
-        //         #interrupt-cells = <1>;
-        //         interrupt-controller ;
-        //     };
-        // };
+         xdma_0: axi-pcie@40000000 {
+             #address-cells = <3>;
+             #interrupt-cells = <1>;
+             #size-cells = <2>;
+             clock-names = "sys_clk", "sys_clk_gt";
+             clocks = <&clkc1>, <&clkc1>;
+             compatible = "xlnx,xdma-host-3.00";
+             device_type = "pci";
+             interrupt-map =	<0x0 0 0 1 &pcie_intc_0 1>,
+								<0x0 0 0 2 &pcie_intc_0 2>,
+								<0x0 0 0 3 &pcie_intc_0 3>,
+								<0x0 0 0 4 &pcie_intc_0 4>;
+             interrupt-map-mask = <0x0 0 0 7>;
+             interrupt-names = "misc", "msi0", "msi1";
+             interrupt-parent = <&PLIC>;
+             interrupts = <53 52 51>;
+             ranges = <0x02000000 0x00000000 0x50000000 0x0 0x50000000 0x00000000 0x10000000>;
+             reg = <0x00000000 0x40000000 0x0 0x10000000>;
+             pcie_intc_0: interrupt-controller {
+                 #address-cells = <0>;
+                 #interrupt-cells = <1>;
+                 interrupt-controller ;
+             };
+         };
     };
 
     /*
