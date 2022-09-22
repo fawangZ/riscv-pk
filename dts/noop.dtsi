@@ -39,13 +39,12 @@
             compatible = "fixed-clock";
         };
 
-		/*
         ethernet1: ethernet@31010000 {
             compatible = "st,stm32-dwmac", "snps,dwmac-3.50a";
             reg = <0 0x31010000 0 0x10000>;
             reg-names = "stmmaceth";
             interrupt-parent = <&PLIC>;
-            interrupts = <44 43 42>;
+            interrupts = <3 2 1>;
             interrupt-names = "eth_lpi", "macirq", "eth_wake_irq";
             clock-names = "stmmaceth";
             clocks = <&clkc>;
@@ -63,7 +62,6 @@
             //     };
             // };
         };
-		*/
 
         // sdhci2: sdhci@30050000 {
         //     compatible = "snps,dwcmshc-sdhci";
