@@ -42,6 +42,9 @@ static void filter_dtb(uintptr_t source)
 
 static void protect_memory(void)
 {
+  // NutShell does not have PMP.
+  return;
+
   // Check to see if up to four PMP registers are implemented.
   // Ignore the illegal-instruction trap if PMPs aren't supported.
   uintptr_t a0 = 0, a1 = 0, a2 = 0, a3 = 0, tmp, cfg;
