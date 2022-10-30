@@ -146,6 +146,9 @@ static void send_ipi_many(uintptr_t* pmask, int event)
   }
 }
 
+long write_perf_csr(uint64_t csr, uint64_t data);
+long read_perf_csr(uint64_t csr);
+
 void mcall_trap(uintptr_t* regs, uintptr_t mcause, uintptr_t mepc)
 {
   write_csr(mepc, mepc + 4);
@@ -188,11 +191,375 @@ send_ipi:
       break;
     case SBI_PLIC_EOI:
       retval = mcall_plic_eoi();
+    case SBI_SET_PERF:
+      mcall_console_putchar('@');
+      retval = write_perf_csr(arg0, arg1);
+      break;
+    case SBI_GET_PERF:
+      mcall_console_putchar('$');
+      retval = read_perf_csr(arg0);
+      break;
     default:
       retval = -ENOSYS;
       break;
   }
   regs[10] = retval;
+}
+
+#define csr_read(csr)						\
+({								\
+	register unsigned long __v;				\
+	__asm__ __volatile__ ("csrr %0, " #csr			\
+			      : "=r" (__v) :			\
+			      : "memory");			\
+	__v;							\
+})
+
+#define csr_write(csr, val)					\
+({								\
+	unsigned long __v = (unsigned long)(val);		\
+	__asm__ __volatile__ ("csrw " #csr ", %0"		\
+			      : : "rK" (__v)			\
+			      : "memory");			\
+})
+
+long write_perf_csr(uint64_t csr, uint64_t data) {
+  // write according to csr number
+  switch (csr) {
+    case 0xb00:
+      csr_write(0xb00, data);
+      break;
+    case 0xb01:
+      csr_write(0xb01, data);
+      break;
+    case 0xb02:
+      csr_write(0xb02, data);
+      break;
+    case 0xb03:
+      csr_write(0xb03, data);
+      break;
+    case 0xb04:
+      csr_write(0xb04, data);
+      break;
+    case 0xb05:
+      csr_write(0xb05, data);
+      break;
+    case 0xb06:
+      csr_write(0xb06, data);
+      break;
+    case 0xb07:
+      csr_write(0xb07, data);
+      break;
+    case 0xb08:
+      csr_write(0xb08, data);
+      break;
+    case 0xb09:
+      csr_write(0xb09, data);
+      break;
+    case 0xb0a:
+      csr_write(0xb0a, data);
+      break;
+    case 0xb0b:
+      csr_write(0xb0b, data);
+      break;
+    case 0xb0c:
+      csr_write(0xb0c, data);
+      break;
+    case 0xb0d:
+      csr_write(0xb0d, data);
+      break;
+    case 0xb0e:
+      csr_write(0xb0e, data);
+      break;
+    case 0xb0f:
+      csr_write(0xb0f, data);
+      break;
+    case 0xb10:
+      csr_write(0xb10, data);
+      break;
+    case 0xb11:
+      csr_write(0xb11, data);
+      break;
+    case 0xb12:
+      csr_write(0xb12, data);
+      break;
+    case 0xb13:
+      csr_write(0xb13, data);
+      break;
+    case 0xb14:
+      csr_write(0xb14, data);
+      break;
+    case 0xb15:
+      csr_write(0xb15, data);
+      break;
+    case 0xb16:
+      csr_write(0xb16, data);
+      break;
+    case 0xb17:
+      csr_write(0xb17, data);
+      break;
+    case 0xb18:
+      csr_write(0xb18, data);
+      break;
+    case 0xb19:
+      csr_write(0xb19, data);
+      break;
+    case 0xb1a:
+      csr_write(0xb1a, data);
+      break;
+    case 0xb1b:
+      csr_write(0xb1b, data);
+      break;
+    case 0xb1c:
+      csr_write(0xb1c, data);
+      break;
+    case 0xb1d:
+      csr_write(0xb1d, data);
+      break;
+    case 0xb1e:
+      csr_write(0xb1e, data);
+      break;
+    case 0xb1f:
+      csr_write(0xb1f, data);
+      break;
+    // counter end, event begin
+    case 0x320:
+      csr_write(0x320, data);
+      break;
+    case 0x321:
+      csr_write(0x321, data);
+      break;
+    case 0x322:
+      csr_write(0x322, data);
+      break;
+    case 0x323:
+      csr_write(0x323, data);
+      break;
+    case 0x324:
+      csr_write(0x324, data);
+      break;
+    case 0x325:
+      csr_write(0x325, data);
+      break;
+    case 0x326:
+      csr_write(0x326, data);
+      break;
+    case 0x327:
+      csr_write(0x327, data);
+      break;
+    case 0x328:
+      csr_write(0x328, data);
+      break;
+    case 0x329:
+      csr_write(0x329, data);
+      break;
+    case 0x32a:
+      csr_write(0x32a, data);
+      break;
+    case 0x32b:
+      csr_write(0x32b, data);
+      break;
+    case 0x32c:
+      csr_write(0x32c, data);
+      break;
+    case 0x32d:
+      csr_write(0x32d, data);
+      break;
+    case 0x32e:
+      csr_write(0x32e, data);
+      break;
+    case 0x32f:
+      csr_write(0x32f, data);
+      break;
+    case 0x330:
+      csr_write(0x330, data);
+      break;
+    case 0x331:
+      csr_write(0x331, data);
+      break;
+    case 0x332:
+      csr_write(0x332, data);
+      break;
+    case 0x333:
+      csr_write(0x333, data);
+      break;
+    case 0x334:
+      csr_write(0x334, data);
+      break;
+    case 0x335:
+      csr_write(0x335, data);
+      break;
+    case 0x336:
+      csr_write(0x336, data);
+      break;
+    case 0x337:
+      csr_write(0x337, data);
+      break;
+    case 0x338:
+      csr_write(0x338, data);
+      break;
+    case 0x339:
+      csr_write(0x339, data);
+      break;
+    case 0x33a:
+      csr_write(0x33a, data);
+      break;
+    case 0x33b:
+      csr_write(0x33b, data);
+      break;
+    case 0x33c:
+      csr_write(0x33c, data);
+      break;
+    case 0x33d:
+      csr_write(0x33d, data);
+      break;
+    case 0x33e:
+      csr_write(0x33e, data);
+      break;
+    case 0x33f:
+      csr_write(0x33f, data);
+      break;
+    default:
+      return -1;
+  }
+  return 1;
+}
+
+long read_perf_csr(uint64_t csr) {
+  // read according to csr number
+  switch (csr) {
+    case 0xb00:
+      return csr_read(0xb00);
+    case 0xb01:
+      return csr_read(0xb01);
+    case 0xb02:
+      return csr_read(0xb02);
+    case 0xb03:
+      return csr_read(0xb03);
+    case 0xb04:
+      return csr_read(0xb04);
+    case 0xb05:
+      return csr_read(0xb05);
+    case 0xb06:
+      return csr_read(0xb06);
+    case 0xb07:
+      return csr_read(0xb07);
+    case 0xb08:
+      return csr_read(0xb08);
+    case 0xb09:
+      return csr_read(0xb09);
+    case 0xb0a:
+      return csr_read(0xb0a);
+    case 0xb0b:
+      return csr_read(0xb0b);
+    case 0xb0c:
+      return csr_read(0xb0c);
+    case 0xb0d:
+      return csr_read(0xb0d);
+    case 0xb0e:
+      return csr_read(0xb0e);
+    case 0xb0f:
+      return csr_read(0xb0f);
+    case 0xb10:
+      return csr_read(0xb10);
+    case 0xb11:
+      return csr_read(0xb11);
+    case 0xb12:
+      return csr_read(0xb12);
+    case 0xb13:
+      return csr_read(0xb13);
+    case 0xb14:
+      return csr_read(0xb14);
+    case 0xb15:
+      return csr_read(0xb15);
+    case 0xb16:
+      return csr_read(0xb16);
+    case 0xb17:
+      return csr_read(0xb17);
+    case 0xb18:
+      return csr_read(0xb18);
+    case 0xb19:
+      return csr_read(0xb19);
+    case 0xb1a:
+      return csr_read(0xb1a);
+    case 0xb1b:
+      return csr_read(0xb1b);
+    case 0xb1c:
+      return csr_read(0xb1c);
+    case 0xb1d:
+      return csr_read(0xb1d);
+    case 0xb1e:
+      return csr_read(0xb1e);
+    case 0xb1f:
+      return csr_read(0xb1f);
+    // counter end, event begin
+    case 0x320:
+      return csr_read(0x320);
+    case 0x321:
+      return csr_read(0x321);
+    case 0x322:
+      return csr_read(0x322);
+    case 0x323:
+      return csr_read(0x323);
+    case 0x324:
+      return csr_read(0x324);
+    case 0x325:
+      return csr_read(0x325);
+    case 0x326:
+      return csr_read(0x326);
+    case 0x327:
+      return csr_read(0x327);
+    case 0x328:
+      return csr_read(0x328);
+    case 0x329:
+      return csr_read(0x329);
+    case 0x32a:
+      return csr_read(0x32a);
+    case 0x32b:
+      return csr_read(0x32b);
+    case 0x32c:
+      return csr_read(0x32c);
+    case 0x32d:
+      return csr_read(0x32d);
+    case 0x32e:
+      return csr_read(0x32e);
+    case 0x32f:
+      return csr_read(0x32f);
+    case 0x330:
+      return csr_read(0x330);
+    case 0x331:
+      return csr_read(0x331);
+    case 0x332:
+      return csr_read(0x332);
+    case 0x333:
+      return csr_read(0x333);
+    case 0x334:
+      return csr_read(0x334);
+    case 0x335:
+      return csr_read(0x335);
+    case 0x336:
+      return csr_read(0x336);
+    case 0x337:
+      return csr_read(0x337);
+    case 0x338:
+      return csr_read(0x338);
+    case 0x339:
+      return csr_read(0x339);
+    case 0x33a:
+      return csr_read(0x33a);
+    case 0x33b:
+      return csr_read(0x33b);
+    case 0x33c:
+      return csr_read(0x33c);
+    case 0x33d:
+      return csr_read(0x33d);
+    case 0x33e:
+      return csr_read(0x33e);
+    case 0x33f:
+      return csr_read(0x33f);
+    default:
+      return -1;
+  }
 }
 
 void redirect_trap(uintptr_t epc, uintptr_t mstatus, uintptr_t badaddr)
