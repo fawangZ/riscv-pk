@@ -9,10 +9,14 @@
 	L19: cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-		timebase-frequency = <1000000>;
+		/*
+		 * The rdtime cycle multiplied by 100 is
+		 * the cycle frequency (CPU frequency)
+		 */
+		timebase-frequency = <250000>;//25Khz
 		L6: cpu@0 {
 			clock-frequency = <1000000>;
-			compatible = "XiangShan,YanqiHu", "riscv";
+			compatible = "XiangShan,Nanhu", "riscv";
 			d-cache-block-size = <64>;
 			d-cache-sets = <64>;
 			d-cache-size = <16384>;
@@ -29,7 +33,7 @@
 			reg = <0x0>;
 			riscv,isa = "rv64imafdc";
 			status = "okay";
-			timebase-frequency = <1000000>;
+			timebase-frequency = <250000>;//25Khz
 			tlb-split;
 			L4: interrupt-controller {
 				#interrupt-cells = <1>;
