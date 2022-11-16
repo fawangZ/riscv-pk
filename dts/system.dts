@@ -9,7 +9,12 @@
 	L19: cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-		timebase-frequency = <1000000>;
+		/* The rdtime cycle multiplied by 10 is
+		 * the cycle frequency (CPU frequency)
+		 * chisel real time clock =  io_clock / 10
+		 * nanhu(soc) is 50Mhz
+		 */
+		timebase-frequency = <5000000>;
 		L6: cpu@0 {
 			clock-frequency = <1000000>;
 			compatible = "UCAS,COOSCA1.0", "riscv";
@@ -29,7 +34,7 @@
 			reg = <0x0>;
 			riscv,isa = "rv64imafdc";
 			status = "okay";
-			timebase-frequency = <1000000>;
+			timebase-frequency = <5000000>;
 			tlb-split;
 			L4: interrupt-controller {
 				#interrupt-cells = <1>;
