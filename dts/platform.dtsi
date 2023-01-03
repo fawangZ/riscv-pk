@@ -119,7 +119,7 @@
     };
 
     chosen {
-        bootargs = "root=/dev/mmcblk0p1 rootfstype=ext4 rw rootwait earlycon noinitrd";
+        bootargs = "root=/dev/nvme0n1p2 rootfstype=ext4 rw rootwait earlycon noinitrd";
     };
 
     L11: memory@100000000 {
