@@ -9,9 +9,9 @@
 	L19: cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-		// timebase-frequency = <1000000>;
+		timebase-frequency = <1000000>;
     // timebase-frequency = <990099>;
-    timebase-frequency = <495049>;
+    // timebase-frequency = <495049>;
 		L6: cpu@0 {
 			clock-frequency = <1000000>;
 			compatible = "XiangShan,YanqiHu", "riscv";
@@ -31,9 +31,9 @@
 			reg = <0x0>;
 			riscv,isa = "rv64imafdc";
 			status = "okay";
-			// timebase-frequency = <1000000>;
+			timebase-frequency = <1000000>;
       // timebase-frequency = <990099>;
-      timebase-frequency = <495049>;
+      // timebase-frequency = <495049>;
 			tlb-split;
 			L4: interrupt-controller {
 				#interrupt-cells = <1>;
