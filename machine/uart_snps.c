@@ -49,6 +49,16 @@
 #define REG_WRITE(addr, value)  (*((volatile unsigned int*)((unsigned long long)addr))) = (value)
 #define REG_READ(addr)  (*((volatile unsigned int*)((unsigned long long)addr)))
 
+#define ROM_START 0x10000000
+#define RAM_START 0x80000000
+
+/*
+ * Current address usage: during flash startup,
+ * core 0 copies code from flash to DDR.
+ * After copying, core 0 sets 0x39001008 to 1 to notify core 1
+ */
+#define RESET_SIGNAL_ADDR 0x39001008
+
 void uart_delay(unsigned int loops)
 {
   while(loops--){
@@ -56,7 +66,7 @@ void uart_delay(unsigned int loops)
   }
 }
 
-void printInfo(){
+void printInfo(unsigned int hartid){
   register unsigned int value asm("t0");
   register unsigned int status asm("t1");
 
@@ -81,8 +91,72 @@ void printInfo(){
     value = REG_READ(LSR);
     status = !(value & 0x60);
   }
+
+  REG_WRITE(THR, '0'+ hartid);//ascii '0' +hartid
+
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
   //REG_WRITE(THR,data);
   REG_WRITE(THR,0x44);
+}
+
+void printInfoRun(unsigned int hartid){
+  register unsigned int value asm("t0");
+  register unsigned int status asm("t1");
+
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+
+  REG_WRITE(THR,0x52);//ascii R
+
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+
+  REG_WRITE(THR, '0'+ hartid);//ascii '0' +hartid
+
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x55);//ascii U
+  value = REG_READ(LSR);
+  status = !(value & 0x60);
+  //while(!(value & 0x60)) // transmit empty and transmit holding reg empty
+  while(status) // transmit empty and transmit holding reg empty
+  {
+    //uart_delay(100);
+    value = REG_READ(LSR);
+    status = !(value & 0x60);
+  }
+  //REG_WRITE(THR,data);
+  REG_WRITE(THR,0x4E); //ascii N
 }
 
 void writechar(unsigned char data)
@@ -152,24 +226,27 @@ int __am_uartlite_getchar() {
   return readchar();
 }
 
+#define RISCV_FLASH_START
+//#define START_DEBUG
+
+#ifdef RISCV_FLASH_START
+/*
+ * Starting from flash requires copying code to DDR
+ */
 void copyAndRun(void)
 {
   extern uint64_t reset_vector[];
   extern uint64_t _run[];
   extern uint64_t _data[];
-  //extern uint64_t _end[];
-
-  #define ROM_START 0x10000000
-  #define RAM_START 0x80000000
 
   register uint64_t *romStart asm("t0") = (uint64_t *)(unsigned long long)ROM_START;
   register uint64_t *ramStart asm("t1") = (uint64_t *)(unsigned long long)RAM_START;
   register uint64_t *start asm("t2") = &reset_vector[0];
   register uint64_t *end asm("t3") = &_data[0];
-  //register uint64_t *end asm("t3") = &_end[0];
   uint64_t size = end - start;
 
   uint64_t i = 0;
+  uint64_t count = 0;
   for (i = 0; i < size; i += 16) {
      #define MACRO(j) ramStart[i + j] = romStart[i + j]
      #define MACRO4(j) MACRO(j); MACRO(j + 1); MACRO(j + 2); MACRO(j + 3);
@@ -179,14 +256,82 @@ void copyAndRun(void)
   register uint64_t *run asm("t4") = &_run[0];
   uint64_t runOffset = run - start;
   register uint64_t *runAddr asm("t5") = ramStart + runOffset;
+
+  register volatile uint64_t *reset_lock = (uint64_t *)RESET_SIGNAL_ADDR;
   __asm__ __volatile__("fence.i");
+  *reset_lock = 1;
+  __asm__ __volatile__("fence.i");
+#ifdef START_DEBUG
+  if (*reset_lock == 1) {
+	for (count = 0; count < 10; count++)
+	{
+      __am_uartlite_putchar('0');
+	}
+  }
+#endif
+
+  (*(void(*) ())runAddr)();
+}
+#else //RISCV_FLASH_START
+
+/*
+ * Starting from DDR(RAM) does not require copying code
+ */
+void copyAndRun(void)
+{
+  extern uint64_t reset_vector[];
+  extern uint64_t _run[];
+
+  register uint64_t *ramStart asm("t1") = (uint64_t *)(unsigned long long)RAM_START;
+  register uint64_t *start asm("t2") = &reset_vector[0];
+
+  uint64_t count = 0;
+  register uint64_t *run asm("t4") = &_run[0];
+  uint64_t runOffset = run - start;
+  register uint64_t *runAddr asm("t5") = ramStart + runOffset;
+  register volatile uint64_t *reset_lock = (uint64_t *)RESET_SIGNAL_ADDR;
+  __asm__ __volatile__("fence.i");
+
+  *reset_lock = 1;
+#ifdef START_DEBUG
+  if (*reset_lock == 1) {
+	for (count = 0; count < 10; count++)
+	{
+      __am_uartlite_putchar('0');
+	}
+  }
+#endif
   (*(void(*) ())runAddr)();
 }
 
+#endif //RISCV_FLASH_START
+
+void noCopyAndRun(void)
+{
+	uint64_t count = 0;
+	extern uint64_t reset_vector[];
+	extern uint64_t _run[];
+	register uint64_t *start asm("t2") = &reset_vector[0];
+	register uint64_t *ramStart asm("t1") = (uint64_t *)(unsigned long long)RAM_START;
+	register uint64_t *run asm("t4") = & _run[0];
+	uint64_t runOffset = run - start;
+	register uint64_t *runAddr asm("t5") = ramStart + runOffset;
+
+#ifdef START_DEBUG
+    register volatile uint64_t *reset_lock = (uint64_t *)RESET_SIGNAL_ADDR;
+    if (*reset_lock == 1) {
+      for (count = 0; count < 10; count++){
+		  __am_uartlite_putchar('1');
+      }
+    }
+#endif
+   __asm__ __volatile__("fence.i");
+
+	(*(void(*) ())runAddr)();
+}
 
 void initBSS(void)
 {
-  #define RAM_START 0x80000000
   uint64_t *ramStart  = (uint64_t *)(unsigned long long)RAM_START;
 
   extern uint64_t reset_vector[];

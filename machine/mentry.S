@@ -266,13 +266,28 @@ do_reset:
   li x30, 0
   li x31, 0
 #ifdef S2C
+  csrr a0, mhartid
+  beqz a0, copy_and_run
+
+wait_for_copy_and_run:
+  la a4,0x39001008
+  LOAD a4, 0(a4)
+  beqz a4, wait_for_copy_and_run
+  csrr a0, mhartid
+  jal printInfo
+  jal noCopyAndRun
+
+copy_and_run :
   jal initUart
   //jal initDDR
+  csrr a0, mhartid
   jal printInfo
   jal copyAndRun
 #endif
   .globl _run
 _run:
+  csrr a0, mhartid
+  jal printInfoRun
   jal initBSS
   csrw mscratch, x0
 
