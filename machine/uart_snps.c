@@ -226,7 +226,7 @@ int __am_uartlite_getchar() {
   return readchar();
 }
 
-#define RISCV_FLASH_START
+//#define RISCV_FLASH_START
 //#define START_DEBUG
 
 #ifdef RISCV_FLASH_START
