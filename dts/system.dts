@@ -158,10 +158,22 @@
                 interrupt-controller ;
             };
         };
+
+	    serial@310B0000 {
+            compatible = "ns16550a";
+            reg = <0x0 0x310B0000 0x0 0x10000>;
+            reg-shift = <0x02>;
+            reg-io-width = <0x04>;
+            interrupt-parent = <&PLIC>;
+            interrupts = <40>;
+            clock-frequency = <50000000>;
+            status = "okay";
+	    };
     };
 
     chosen {
-         bootargs = "root=/dev/nvme0n1p2 rootfstype=ext4 rw rootwait earlycon noinitrd";
+         bootargs = "root=/dev/nvme0n1p2 rootfstype=ext4 rw rootwait console=ttyS0,115200n8 earlycon noinitrd";
+         stdout-path = "/soc/serial@310B0000";
     };
 
     L11: memory@100000000 {
