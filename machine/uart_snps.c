@@ -152,6 +152,8 @@ int __am_uartlite_getchar() {
   return readchar();
 }
 
+//#define RISCV_FLASH_START
+#ifdef RISCV_FLASH_START
 void copyAndRun(void)
 {
   extern uint64_t reset_vector[];
@@ -182,6 +184,26 @@ void copyAndRun(void)
   __asm__ __volatile__("fence.i");
   (*(void(*) ())runAddr)();
 }
+#else
+void copyAndRun(void)
+{
+  extern uint64_t reset_vector[];
+  extern uint64_t _run[];
+  extern uint64_t _data[];
+
+  #define RAM_START 0x80000000
+
+  register uint64_t *ramStart asm("t1") = (uint64_t *)(unsigned long long)RAM_START;
+  register uint64_t *start asm("t2") = &reset_vector[0];
+
+  register uint64_t *run asm("t4") = &_run[0];
+  uint64_t runOffset = run - start;
+  register uint64_t *runAddr asm("t5") = ramStart + runOffset;
+  __asm__ __volatile__("fence.i");
+  (*(void(*) ())runAddr)();
+}
+
+#endif
 
 void initBSS(void)
 {
