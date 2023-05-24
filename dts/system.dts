@@ -170,6 +170,38 @@
             status = "okay";
 	    };
 
+		qspi: spi@31000000 {
+			compatible = "cdns,qspi-nor";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0x0 0x31000000 0x0 0x1000>,
+			      <0x0 0x10000000 0x0 0x10000000>;
+			interrupt-parent = <&PLIC>;
+			interrupts = <44>;
+			cdns,fifo-depth = <128>;
+			cdns,fifo-width = <4>;
+			cdns,trigger-address = <0x10000000>;
+			clocks = <&clkc>;
+			status = "okay";
+
+	        flash0: mt25qu512a@0 {
+		          #address-cells = <1>;
+		          #size-cells = <1>;
+		          compatible = "micron,mt25qu512a", "jedec,spi-nor";
+		          reg = <0>;	/* chip select */
+		          spi-max-frequency = <10000000>;
+
+		          m25p,fast-read;
+		          cdns,page-size = <256>;
+		          cdns,block-size = <16>;
+		          cdns,read-delay = <0>;
+		          cdns,tshsl-ns = <0>;
+		          cdns,tsd2d-ns = <0>;
+		          cdns,tchsh-ns = <0>;
+		          cdns,tslch-ns = <0>;
+	         };
+         };
+
 	sdhci2: sdhci@30050000 {
 		compatible = "snps,dwcmshc-sdhci";
 		reg = <0 0x30050000 0 0x10000>;

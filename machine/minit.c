@@ -15,6 +15,9 @@
 #include <string.h>
 #include <limits.h>
 
+//#define RISCV_FLASH_START
+#define QSPI_BASE_ADDR    (0x31000000)
+#define REG32(addr)       (*(volatile uint32_t *)(uint32_t)(addr))
 pte_t* root_page_table;
 uintptr_t mem_size;
 volatile uint64_t* mtime;
@@ -22,6 +25,39 @@ volatile uint32_t* plic_priorities;
 size_t plic_ndevs;
 void* kernel_start;
 void* kernel_end;
+
+
+#ifdef RISCV_FLASH_START
+/* trigger flash to exit xip mode*/
+static void qspi_trigger_flash()
+{
+    uint32_t status = 0x1;
+    REG32(QSPI_BASE_ADDR + 0x90) = 0xb5b00001; // read novolatile register
+    while(status){
+        status =  REG32(QSPI_BASE_ADDR + 0x90);
+        status &= 0x1;
+    }
+    REG32(QSPI_BASE_ADDR + 0x90) = 0xb5b00001;
+    while(status){
+        status =  REG32(QSPI_BASE_ADDR + 0x90);
+        status &= 0x1;
+    }
+}
+/*
+ *enable flash address writalbe permission
+ *exit flash and qspi xip mode
+ */
+static void qspi_init()
+{
+    /* enable flash address writable permission */
+    write_csr(0x7c0, 0x80b080f08000000UL);
+    REG32(QSPI_BASE_ADDR) = 0x80180081;// disable xip mode
+    REG32(QSPI_BASE_ADDR + 0x4) = 0x0; // read config register to 0x0
+    qspi_trigger_flash();
+    REG32(QSPI_BASE_ADDR + 0x4) = 0x0a0222ec; // for read config
+    qspi_trigger_flash();
+}
+#endif
 
 static void mstatus_init()
 {
@@ -41,6 +77,10 @@ static void mstatus_init()
   // Disable paging
   if (supports_extension('S'))
     write_csr(sptbr, 0);
+
+#ifdef RISCV_FLASH_START
+    qspi_init();
+#endif
 }
 
 // send S-mode interrupts and most exceptions straight to S-mode
