@@ -216,6 +216,25 @@
 		max_req_size = <4096>;
 		status = "disabled";
 	};
+	
+	gpio0: gpio@31110000 {
+		compatible = "snps,dw-apb-gpio";
+		reg = <0 0x31110000 0 0x10000>;
+
+		porta: gpio-controller@0 {
+			compatible = "snps,dw-apb-gpio-port";
+			reg = <0>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			snps,nr-gpios = <32>;
+			interrupt-controller;
+			interrupt-parent = <&PLIC>;
+			interrupts = <5  6  7  8  9  10 11 12
+					13 14 15 16 17 18 19 20
+					21 22 23 24 25 26 27 28
+					29 30 31 32 33 34 35 36>;
+		};
+	};
     };
 
     chosen {
