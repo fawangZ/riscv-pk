@@ -22,7 +22,7 @@ BBL_BIN = $(BBL_BUILD_PATH)/bbl.bin
 BBL_PAYLOAD = $(LINUX_ELF)
 #BBL_PAYLOAD = dummy_payload
 BBL_CONFIG = --host=riscv64-unknown-elf --with-payload=$(BBL_PAYLOAD) \
-						 --with-arch=rv64imac --enable-logo #--enable-print-device-tree
+						 --with-arch=rv64imac_zicsr_zifencei --enable-logo #--enable-print-device-tree
 
 DTB = $(BBL_BUILD_PATH)/system.dtb
 DTS = dts/system.dts
