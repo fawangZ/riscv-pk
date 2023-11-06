@@ -2,6 +2,16 @@
 
 / {
 	L18: soc {
+		L1: interrupt-controller@3c000000 {
+			#interrupt-cells = <1>;
+			compatible = "riscv,plic0";
+			interrupt-controller;
+			interrupts-extended = <&L4 11 &L4 9>;
+			reg = <0x0 0x3c000000 0x0 0x4000000>;
+			reg-names = "control";
+			riscv,max-priority = <7>;
+			riscv,ndev = <257>;
+		};
 		L2: clint@2000000 {
 			compatible = "riscv,clint0";
 			interrupts-extended = <&L4 3 &L4 7>;
@@ -9,7 +19,7 @@
 			reg-names = "control";
 			clock-frequency-mhz = <500>;
 		};
-		L14: serial@60000000 {
+		L14: serial@40600000 {
 			compatible = "xilinx,uartlite";
 			//interrupt-parent = <&L1>;
 			interrupts = <3>;
